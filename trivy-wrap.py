@@ -3,8 +3,8 @@
 import sys
 import argparse
 import docker
+from settings import REAL_TRIVY
 
-TRIVY = "/usr/local/bin/trivy"
 client = docker.from_env()
 
 
@@ -13,6 +13,9 @@ def pull_image(repo, tag):
 
 
 def ensure_image(repo, tag):
+    """
+    check docker for our image
+    """
     path = "%s:%s" % (repo, tag)
     tags = [path for img in client.images.list(
         name='nginx') for path in img.tags]
@@ -21,7 +24,10 @@ def ensure_image(repo, tag):
 
 
 def build_command():
-
+    """
+    Parse out the images name and rebuild command to
+    access "real" trivy
+    """
     parser = argparse.ArgumentParser()
 
     parser.add_argument("keyword", help="subcommand", type=str)
@@ -32,7 +38,7 @@ def build_command():
     args = parser.parse_known_args()
     ns = args[0]
     rest = args[1]
-    cmd = "trivy image " + ns.image
+    cmd = "%s image %s" % (REAL_TRIVY, ns.image)
 
     if ns.severity:
         cmd += " -s " + ns.severity
@@ -45,7 +51,7 @@ def build_command():
 
 def expand_image(image):
     """
-    normalize an image name
+    normalize an image name to long form
     """
     tagged = image.split(':')
     tag = 'latest'
@@ -69,8 +75,6 @@ def expand_image(image):
         owner = names[0]
 
     repo = names[-1]
-    full_repo = image.split(':')[0]
-    ensure_image(full_repo, tag)
 
     full_image = "%s/%s/%s:%s" % (registry, owner, repo, tag)
     short_image = "%s:%s" % (repo, tag)
@@ -80,5 +84,12 @@ def expand_image(image):
 if __name__ == '__main__':
     # Execute when the module is not initialized from an import statement.
     cmd, img = build_command()
-    full, short = expand_image(img)
+    parts = img.split(':')
+    if len(parts) == 1:
+        tag = "latest"
+        repo = parts[0]
+    else:
+        repo, tag = parts
+
+    ensure_image(repo, tag)
     print(cmd)

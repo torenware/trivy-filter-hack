@@ -15,7 +15,7 @@
       "console": "integratedTerminal",
       "args": [
         "image",
-        "kodekloud/webapp-delayed-start"
+        "kodekloud/webapp-delayed-start:latest"
       ]
     }
   ]
