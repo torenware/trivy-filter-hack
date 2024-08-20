@@ -8,10 +8,11 @@
 
 # Edit this file to point to where you
 # installed the trivy-wrapper.py script
+REAL_TRIVY=/usr/local/bin/trivy
 WRAPPER_INSTALL_DIR=.
 
 if [ "$1" != "image" ]; then
-  exec trivy $@
+  exec $REAL_TRIVY $@
 else
   if CMD=$(python3 $WRAPPER_INSTALL_DIR/trivy-wrap.py $@); then
     echo "command: $CMD"
