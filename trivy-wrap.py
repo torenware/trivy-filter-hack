@@ -17,8 +17,8 @@ def ensure_image(repo, tag):
     check docker for our image
     """
     path = "%s:%s" % (repo, tag)
-    tags = [path for img in client.images.list(
-        name='nginx') for path in img.tags]
+    tags = [p for img in client.images.list(
+        name='nginx') for p in img.tags]
     if path not in tags:
         pull_image(repo, tag)
 
@@ -44,7 +44,7 @@ def build_command():
         cmd += " -s " + ns.severity
 
     if len(rest) > 0:
-        cmd += ' '.join(rest)
+        cmd +=  ' ' + ' '.join(rest)
 
     return (cmd, ns.image)
 
