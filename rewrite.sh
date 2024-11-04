@@ -8,7 +8,7 @@
 
 # Edit this file to point to where you
 # installed the trivy-wrapper.py script
-REAL_TRIVY=/usr/local/bin/trivy
+REAL_TRIVY=/usr/bin/trivy
 WRAPPER_INSTALL_DIR=.
 
 if [ "$1" != "image" ]; then
